@@ -3,29 +3,135 @@
   <head>
     <meta charset="utf-8">
     <title>Lab2 - VR application</title>
-    <meta name="description" content="Basic example for Point Cloud component."></meta>
-    <script src="https://aframe.io/releases/0.6.0/aframe.min.js"></script>
-    <script src="js/aframe-pointcloud-component.js"></script>
+	  <script src="js/aframe.min.js"></script>
+    <script src="js/aframe-pointcloud-component.js"></script> 
+    <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script src="js/aframe-gui.js"></script>
+	
+		<script>
+			 var change1 = 0;
+			 var change2 = 0;
+	    newitem = function(){
+			  var iteem = document.getElementById('iteem');
+			  iteem.setAttribute('gltf-model', 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF/Duck.gltf');
+			
+		}
+	    skychange = function(){
+			 var sky=document.getElementById("air_box");
+		if(change1 == 0)
+		{
+            sky.setAttribute("src","#skyTexture2");
+			change1 = 1;
+		}
+		else if(change1 == 1)
+		{
+            sky.setAttribute("src","#skyTexture");
+			change1 = 0;
+		}
+		}
+	    floorchange = function(){
+			 var sky=document.getElementById("floor");
+		if(change2 == 0)
+		{
+            sky.setAttribute("src","#groundTexture2");
+			change2 = 1;
+		}
+		else if(change2 == 1)
+		{
+            sky.setAttribute("src","#groundTexture");
+			change2 = 0;
+		}
+		}
+		
+		window.zoom = 0;
+	window.slide = 0;
+	window.rot = 0;
+	window.increment = 0.2;
+	window.position = '0 3 0';
+	window.rotation = '0 0 0';
+		
+		rotate = function(){
+			
+		rot+=10;
+			 window.rotation=rot+' 0 '+rot;
+			var chart = document.getElementById("rotobj");
+			 chart.setAttribute('rotation', window.rotation);
+		}
+		
+		
+        </script>
+	
   </head>
   <body>
     <a-scene>
       <a-assets>
         <img id="groundTexture" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
+		  <img id="groundTexture2" src="floor.png">
         <img id="skyTexture" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
+		  <img id="skyTexture2" src="sky.png">
       </a-assets>
 
-      <a-plane src="#groundTexture" rotation="-90 0 0" height="100" width="100"></a-plane>
+      <a-plane id="floor" src="#groundTexture" rotation="-90 0 0" height="100" width="100"></a-plane>
       <a-light type="ambient" color="#445451"></a-light>
       <a-light type="point" intensity="2" position="2 4 4"></a-light>
-      <a-sky height="2048" radius="30" src="#skyTexture" theta-length="90" width="2048"></a-sky>
+      <a-sky id="air_box" height="2048" radius="30" src="#skyTexture" theta-length="90" width="2048"></a-sky>
       <a-entity laser-controls line="color: red; opacity: 0.75"></a-entity>
+		<a-entity hand-controls="left"></a-entity>
+        <a-entity hand-controls="right"></a-entity>
+		
+		<a-gui-flex-container 
+			flex-direction="column" justify-content="center" align-items="normal" component-padding="0.1" 
+			opacity="0.7" width="3.5" height="4.5"
+			position="-2 2.5 -4" rotation="0 0 0"
+		>
+			<a-gui-button 
+				width="2.5" id="btn1" height="0.75"
+				onclick="newitem" key-code="32"
+				value="Load an object"
+				font-family="Arial"
+				margin="0 0 0.05 0"
+			>
+			</a-gui-button>
+
+			<a-gui-button 
+				width="2.5" id="btn2" height="0.75"
+				onclick="skychange" key-code="32"
+				value="Change Sky"
+				font-family="Arial"
+				margin="0 0 0.05 0"
+			>
+			</a-gui-button>
+			<a-gui-button 
+				width="2.5" id="btn3" height="0.75"
+				onclick="floorchange" key-code="32"
+				value="Change Ground"
+				font-family="Arial"
+				margin="0 0 0.05 0"
+			>
+			</a-gui-button>
+			
+			<a-gui-button 
+				width="2.5" id="btn4" height="0.75"
+				onclick="rotate" key-code="32"
+				value="Rotate Object"
+				font-family="Arial"
+				margin="0 0 0.05 0"
+			>
+			</a-gui-button>
+
+		</a-gui-flex-container>
+		
+		
+		
       <a-pointcloud 
+					id="rotobj"
         scale="0.1 0.1 0.1" 
         position="0 0.08 -2.5" 
         rotation="-90 45 0" 
         src="url(sculpt.ply)" 
         size="0.01">
       </a-pointcloud>
+		
       <a-pointcloud 
         scale="0.5 0.5 0.5" 
         position="1.5 2 0.5" 
@@ -35,6 +141,20 @@
         depthWrite="false">
       </a-pointcloud>
 
+		<a-gltf-model id="iteem" src="#iteem" position="-5 0 -4"></a-gltf-model>
+	<!-- Camera + cursor. -->
+		<a-entity id="cameraRig" position="1 2 0">
+			<a-camera look-controls wasd-controls position="-1 0 0">
+				<a-gui-cursor id="cursor"
+						  raycaster="objects: [gui-interactable]"
+						  fuse="true" fuse-timeout="2000"
+						  design="dot"
+				>
+				</a-gui-cursor> <!-- /cursor -->
+			</a-camera> <!-- /camera -->
+		</a-entity>
+		
+		
     </a-scene>
   </body>
 </html>
